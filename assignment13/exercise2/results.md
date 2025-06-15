@@ -1,6 +1,17 @@
+
+### Explanation for timing behaviour
+
+- Some optimizations are already in -O0, so the original and optimized versions dont differ much for that optimization level.
+- More complicated optimisations can sometimes be done by O3, but often optimization can just be done with knowledge of the input into the functions.
+- Testing the code in the main function would maybe change results as the input is clearer.
+
+
+
+
 ### Timing Results
 
 Here are the timing results for each snippet:
+
 
 ## Snippet 1
 ```c
@@ -20,6 +31,8 @@ void optimized(int *a, const int *b) {
 ```
 ![Snippet 1 Timing](plots/snippet1_timing_compare.png)
 
+- The compiler doesnt unroll as it has now knowledge if N odd/even.
+
 ## Snippet 2
 ```c
 void process_array_hypot_original(double *a) {
@@ -36,6 +49,9 @@ void process_array_hypot_optimized(double *a) {
 }
 ```
 ![Snippet 2 Timing](plots/snippet2_timing_compare.png)
+
+- Compiler seems to do something similar according to the values.
+
 
 ## Snippet 3
 ```c
@@ -66,6 +82,8 @@ void process_array_conditional_optimized(int *a, const int *b, const int *c, int
 
 ![Snippet 3 Timing](plots/snippet3_timing_compare.png)
 
+- Compiler seems to do something similar according to the values.
+
 ## Snippet 4
 ```c
 void sum_arrays_optimized(const int *a, const int *b, const int *c, long long *sum_a, long long *sum_b, long long *sum_c) {
@@ -90,6 +108,8 @@ void sum_arrays_optimized(const int *a, const int *b, const int *c, long long *s
 ```
 
 ![Snippet 4 Timing](plots/snippet4_timing_compare.png)
+
+- Compiler doesnt seem to optimize so much bc it depends if a, b and c are different
 
 ## Snippet 5
 ```c
@@ -116,6 +136,8 @@ void min_and_sum_optimized(const int *a, int *min_val, long long *sum_val) {
 }
 ```
 ![Snippet 5 Timing](plots/snippet5_timing_compare.png)
+
+- This depends on the unequality/equality of sum and min
 
 ## Snippet 6
 ```c
