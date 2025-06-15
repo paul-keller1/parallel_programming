@@ -165,6 +165,8 @@ void process_array_splitted(int *a, const int *b, const int *c) {
 
 ![Snippet 6 Timing](plots/snippet6_timing_compare.png)
 
+- SIMD seems to be slower here as the access pattern is very simple in the original
+
 ## Snippet 7
 ```c
 void matrix_multiply_original(double **c, double **a, double **b) {
