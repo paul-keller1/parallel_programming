@@ -1,0 +1,3 @@
+Implementation, LLC-Load-Misses, LLC-Store-Misses
+row_major_hadamard_optimized, 310, 6694
+column_major_hadamard_optimized, 561, 4460

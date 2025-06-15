@@ -1,0 +1,45 @@
+Interpret the output and describe what information you can gather. Please also elaborate on these questions:
+        -division in two packages, PCI for network cards and scsi disk (135GB, disk type unclear)
+        -62GB of storage
+
+
+Can you retrieve the number of CPUs and cores from the output?
+        -two physical CPUs (packages)
+        -2x6 = 12 cores
+        -2 PUs (processing units) per core ->24PUs/threads
+
+Investigate the memory hierarchy information provided by lstopo.
+        -NUMA node 31GB associated with each Cpu
+        -12MB L3 cache for each Cpu
+        -256KB L2, 32KB L1d and 32KB l1i cache for each core
+        -135GB block sda (external)
+
+How much memory (RAM) does the compute node offer?
+        -62GB
+
+What does the term NUMANode tell you about the memory? Why are there two NUMANodes?
+        -distributed shared memory, one for each cpu
+        -fast internal CPU access + external access must be managed
+
+What interesting information can you retrieve about the caches of the system?
+        -different layers
+        -l3 is shared within cpu, others are assigned to cores
+
+Is there anything else you can find out from the output?
+        -INFINI interface (fast short-distance transmission)
+        -parts interconnection is specified
+
+Based on your observations, how many threads could you utilize at maximum when parallelising a program (e.g. with OpenMP) on this system?
+        -24
+
+Compare your observations to the LCC3 documentation and CPU documentation. Do your observations match the documentation?
+        lcc3 documentation:
+        Per node:
+                -2 Intel six-core Xeon X5650 cpus(12 cores running on 2.7 GHz) //matches
+                -24 GB DDR3 ECC RAM (2 GB per core) //less than by lstopo
+                -Single-Port 4x QDR Infiniband PCIe 2.0 HCA //matches
+                -250 GB SATA2 hard disk //more than specified
+
+        CPU documentation:
+                -12MB cache, (less than by lstopo) and no specification of different levels
+                -12 threads //matches

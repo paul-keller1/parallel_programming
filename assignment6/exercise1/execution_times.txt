@@ -1,0 +1,62 @@
+Running ./critical with 1 threads...
+Approximate value of pi: 3.141579
+time: 1.0787 seconds
+Time: 1.0787 seconds
+Running ./critical with 2 threads...
+Approximate value of pi: 3.141444
+time: 2.4479 seconds
+Time: 2.4479 seconds
+Running ./critical with 4 threads...
+Approximate value of pi: 3.141493
+time: 2.9999 seconds
+Time: 2.9999 seconds
+Running ./critical with 8 threads...
+Approximate value of pi: 3.141434
+time: 4.3929 seconds
+Time: 4.3929 seconds
+Running ./critical with 12 threads...
+Approximate value of pi: 3.141428
+time: 5.3543 seconds
+Time: 5.3543 seconds
+
+Running ./atomic with 1 threads...
+Approximate value of pi: 3.141364
+time: 0.9315 seconds
+Time: 0.9315 seconds
+Running ./atomic with 2 threads...
+Approximate value of pi: 3.153084
+time: 2.0025 seconds
+Time: 2.0025 seconds
+Running ./atomic with 4 threads...
+Approximate value of pi: 3.129669
+time: 1.7881 seconds
+Time: 1.7881 seconds
+Running ./atomic with 8 threads...
+Approximate value of pi: 3.148477
+time: 3.1329 seconds
+Time: 3.1329 seconds
+Running ./atomic with 12 threads...
+Approximate value of pi: 3.149378
+time: 3.1380 seconds
+Time: 3.138 seconds
+
+Running ./reduction with 1 threads...
+Approximate value of pi: 3.141224
+time: 0.7210 seconds
+Time: 0.721 seconds
+Running ./reduction with 2 threads...
+Approximate value of pi: 3.141431
+time: 0.3957 seconds
+Time: 0.3957 seconds
+Running ./reduction with 4 threads...
+Approximate value of pi: 3.141050
+time: 0.2371 seconds
+Time: 0.2371 seconds
+Running ./reduction with 8 threads...
+Approximate value of pi: 3.141515
+time: 0.5565 seconds
+Time: 0.5565 seconds
+Running ./reduction with 12 threads...
+Approximate value of pi: 3.141878
+time: 0.5554 seconds
+Time: 0.5554 seconds

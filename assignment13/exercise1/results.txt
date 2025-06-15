@@ -1,0 +1,283 @@
+Operational cost for Intel Xeon:
+
+
+https://www.agner.org/optimize/instruction_tables.pdf 
+
+I assumed that the architecture is a miniature version of the Intel Nehalem
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Operation Type          | Relevant Nehalem Instruction(s) | Operands (Example) | Latency (cycles) | Throughput (cycles) | Notes
+------------------------|---------------------------------|--------------------|------------------|---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Addition/Subtraction    | ADD SUB                         | r,r/i              | 1                | 0.33                | Extremely fast. ADD/SUB with register or immediate takes 1 cycle, 3 can start per cycle.
+                        | ADD SUB                         | r,m                | 1                | 1                   | Memory operand doesn't increase latency, but reduces throughput.
+                        | ADC SBB (with carry/borrow)     | r,r/i              | 2                | 2                   | Carry/borrow chain adds slight delay.
+------------------------|---------------------------------|--------------------|------------------|---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Multiplication          | IMUL                            | r32 (or r64)       | 3                | 2                   | Signed integer multiplication. Efficient.
+                        | MUL                             | r32 (or r64)       | 5                | 2                   | Unsigned integer multiplication. Higher latency.
+                        | IMUL                            | r,r,i (3-operand)  | 3                | 1                   | Multiply by immediate constant is very efficient.
+------------------------|---------------------------------|--------------------|------------------|---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Division                | DIV / IDIV                      | r32, r64           | 17-28 to 37-100+ | 7-17 to 28-86+      | Very slow. Use only when necessary. Varies significantly by input.
+------------------------|---------------------------------|--------------------|------------------|---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Shifts                  | SHL, SHR, SAR, SAL              | r,i                | 1                | 0.5          | Very fast. As efficient as ADD for register operands. Good for multiply/divide by powers of 2.
+                        | SHL, SHR, SAR, SAL              | r,cl               | 1-3              | 1                   | Variable shift amounts may introduce slightly higher latency.
+                        | SHL, SHR, SAR, SAL              | m,i/cl             | 3                | 1                   | Memory operand adds latency. cl means the lower 8 bits of the register are
+------------------------|---------------------------------|--------------------|------------------|---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Comparison              | CMP                             | r,r/i              | 1                | 0.33                | Very fast. Sets flags for conditional jumps.
+------------------------|---------------------------------|--------------------|------------------|---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Increment/Decrement     | INC DEC NEG NOT                 | r                  | 1                | 0.33                | Just like ADD/SUB. Efficient for simple operations.
+                        | INC DEC NEG NOT                 | m                  | 3                | 1                   | Memory operand introduces a small delay.
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+------------ a) -----------------
+
+.LC0: // local constant to label constant data
+        .string "a): %u\n"
+a:
+        mov     esi, edi
+        xor     eax, eax //eax is used for floating point arguments to functions(printf), but set to zero this way to indicate the lack of floating point arguments
+        mov     edi, OFFSET FLAT:.LC0
+        sal     esi, 5 //shift arithmetic left
+        jmp     printf
+.LC1:
+        .string "a): solution %u\n"
+a_solution:
+        mov     esi, edi
+        xor     eax, eax
+        mov     edi, OFFSET FLAT:.LC1
+        sal     esi, 5
+        jmp     printf
+.LC2:
+
+
+-> seems a lot like my version, although not manually optimized version is the same; a lot of code is missing here compared to O0 because of different optimizations with the loading/base pointers etc FPO (frame pointer omission)
+
+----------------- b) -----------------
+
+.LC2:
+        .string "b): %u\n"
+b:
+        mov     esi, edi
+        xor     eax, eax
+        sal     esi, 4
+        sub     esi, edi
+        mov     edi, OFFSET FLAT:.LC2
+        jmp     printf
+.LC3:
+        .string "b): solution %u\n"
+b_solution:
+        mov     esi, edi
+        xor     eax, eax
+        sal     esi, 4
+        sub     esi, edi
+        mov     edi, OFFSET FLAT:.LC3
+        jmp     printf
+
+same
+
+----------------- c) -----------------
+
+c:
+        lea     esi, [rdi+rdi*2] // shift add, *2 implemented as shift internally
+        xor     eax, eax
+        mov     edi, OFFSET FLAT:.LC4
+        sal     esi, 5
+        jmp     printf
+.LC5:
+
+
+void c_solution(unsigned c1) {
+    unsigned c2 = (c1 << 6) + (c1 << 5);
+    printf("c): solution %u\n", c2);
+}
+
+
+        .string "c): solution %u\n"
+c_solution:
+        imul    esi, edi, 96
+        xor     eax, eax
+        mov     edi, OFFSET FLAT:.LC5
+        jmp     printf
+.LC7:
+
+->gets retransformed into a multiplication, which is not optimal
+
+
+void c_solution(unsigned c1) {
+    unsigned c2 = c1 + (c1 << 1);
+    c2 = c2 << 5;
+    printf("c): solution %u\n", c2);
+}
+
+
+c_solution:
+        lea     esi, [rdi+rdi*2]
+        xor     eax, eax
+        mov     edi, OFFSET FLAT:.LC5
+        sal     esi, 5
+        jmp     printf
+.LC7:
+
+-------------- d) -----------------
+
+d:
+        mov     edi, edi
+        pxor    xmm0, xmm0
+        xor     eax, eax
+        cvtsi2sdq       xmm0, rdi
+        mulsd   xmm0, QWORD PTR .LC6[rip]
+        mov     edi, OFFSET FLAT:.LC7
+        cvttsd2si       rsi, xmm0
+        jmp     printf
+.LC8:
+        .string "d): solution %u\n"
+d_solution:
+        mov     esi, edi
+        xor     eax, eax
+        mov     edi, OFFSET FLAT:.LC8
+        shr     esi, 3
+        jmp     printf
+.LC9:
+
+->strictly speaking, the versions arent equivalent, because of floating point rounding errors, but my version is maybe the intended one and faster
+
+-------------- e) -----------------
+
+
+        .string "e): %u\n"
+e:
+        lea     rax, [rdi+4000] //mark where to stop the loop
+        xor     esi, esi
+.L13:
+        add     esi, DWORD PTR [rdi]
+        add     rdi, 20 // moves to the next element by addition instead of multiplication
+        cmp     rax, rdi
+        jne     .L13 //jump if the two above registers are not equal "loop condition"
+        mov     edi, OFFSET FLAT:.LC9
+        xor     eax, eax
+        jmp     printf
+.LC10:
+        .string "e): solution %u\n"
+e_solution:
+        lea     rax, [rdi+4000]
+        xor     esi, esi
+.L16:
+        add     esi, DWORD PTR [rdi]
+        add     rdi, 20
+        cmp     rax, rdi
+        jne     .L16
+        mov     edi, OFFSET FLAT:.LC10
+        xor     eax, eax
+        jmp     printf
+.LC14:
+
+
+----------------- f) -----------------
+
+f:
+        push    rbp
+        mov     rax, rdi
+        lea     rbp, [rdi+8000]
+        push    rbx
+        mov     rbx, rdi
+        sub     rsp, 8
+        movdqa  xmm2, XMMWORD PTR .LC11[rip]
+        movdqa  xmm4, XMMWORD PTR .LC12[rip]
+        movapd  xmm3, XMMWORD PTR .LC13[rip]
+.L19:
+        pshufd  xmm0, xmm2, 238
+        cvtdq2pd        xmm1, xmm2
+        movupd  xmm6, XMMWORD PTR [rax]
+        add     rax, 32
+        cvtdq2pd        xmm0, xmm0
+        divpd   xmm1, xmm3 //division -> slow
+        movupd  xmm5, XMMWORD PTR [rax-16]
+        paddd   xmm2, xmm4
+        divpd   xmm0, xmm3 //too divisions because of simd
+        addpd   xmm1, xmm6
+        movups  XMMWORD PTR [rax-32], xmm1
+        addpd   xmm0, xmm5
+        movups  XMMWORD PTR [rax-16], xmm0
+        cmp     rax, rbp
+        jne     .L19
+        mov     edi, OFFSET FLAT:.LC14
+        xor     eax, eax
+        call    printf
+.L20:
+        movsd   xmm0, QWORD PTR [rbx]
+        mov     edi, OFFSET FLAT:.LC15
+        mov     eax, 1
+        add     rbx, 8
+        call    printf
+        cmp     rbx, rbp
+        jne     .L20
+        add     rsp, 8
+        pop     rbx
+        pop     rbp
+        ret
+f_solution:
+        push    rbp
+        mov     rax, rdi
+        lea     rbp, [rdi+8000]
+        push    rbx
+        mov     rbx, rdi
+        sub     rsp, 8
+        movdqa  xmm2, XMMWORD PTR .LC11[rip]
+        movdqa  xmm4, XMMWORD PTR .LC12[rip]
+        movapd  xmm3, XMMWORD PTR .LC16[rip]
+.L25:
+        pshufd  xmm0, xmm2, 238
+        cvtdq2pd        xmm1, xmm2
+        movupd  xmm6, XMMWORD PTR [rax]
+        add     rax, 32
+        cvtdq2pd        xmm0, xmm0
+        mulpd   xmm1, xmm3
+        movupd  xmm5, XMMWORD PTR [rax-16]
+        paddd   xmm2, xmm4
+        mulpd   xmm0, xmm3
+        addpd   xmm1, xmm6
+        addpd   xmm0, xmm5
+        movups  XMMWORD PTR [rax-32], xmm1
+        movups  XMMWORD PTR [rax-16], xmm0
+        cmp     rax, rbp
+        jne     .L25
+        mov     edi, OFFSET FLAT:.LC14
+        xor     eax, eax
+        call    printf
+.L26:
+        movsd   xmm0, QWORD PTR [rbx]
+        mov     edi, OFFSET FLAT:.LC15
+        mov     eax, 1
+        add     rbx, 8
+        call    printf
+        cmp     rbx, rbp
+        jne     .L26
+        add     rsp, 8
+        pop     rbx
+        pop     rbp
+        ret
+.LC18:
+
+---------------- g) -----------------
+
+g:
+        xorps   xmm0, XMMWORD PTR .LC17[rip]
+        mov     edi, OFFSET FLAT:.LC18
+        mov     eax, 1
+        cvtss2sd        xmm0, xmm0
+        jmp     printf
+.LC19:
+        .string "g): solution %f\n"
+g_solution:
+        movd    esi, xmm0
+        mov     edi, OFFSET FLAT:.LC19
+        pxor    xmm0, xmm0
+        mov     eax, 1
+        add     esi, -2147483648 // not correct, because intended was and xor with 0x80000000
+        mov     DWORD PTR [rsp-12], esi
+        movss   xmm1, DWORD PTR [rsp-12]
+        cvtss2sd        xmm0, xmm1
+        jmp     printf

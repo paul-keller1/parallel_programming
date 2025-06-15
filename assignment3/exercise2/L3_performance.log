@@ -1,0 +1,78 @@
+Starting L3 performance measurements...
+Running false_sharing on cores: 0,1,2,3,4,5
+Total sum: 600000000
+Time taken: 0.310473 seconds
+Total sum: 600000000
+Time taken: 0.310492 seconds
+Total sum: 600000000
+Time taken: 0.310514 seconds
+Total sum: 600000000
+Time taken: 0.310685 seconds
+Total sum: 600000000
+Time taken: 0.310531 seconds
+
+ Performance counter stats for './false_sharing 100000000' (5 runs):
+
+                34      LLC-load-misses:u                                             ( +-679.32% )
+                94      LLC-store-misses:u                                            ( +- 20.89% )
+
+           0.31612 +- 0.00208 seconds time elapsed  ( +-  0.66% )
+
+Running false_sharing on cores: 0,2,4,6,8,10
+Total sum: 600000000
+Time taken: 0.387890 seconds
+Total sum: 600000000
+Time taken: 0.396564 seconds
+Total sum: 600000000
+Time taken: 0.388315 seconds
+Total sum: 600000000
+Time taken: 0.396237 seconds
+Total sum: 600000000
+Time taken: 0.387820 seconds
+
+ Performance counter stats for './false_sharing 100000000' (5 runs):
+
+         1,155,339      LLC-load-misses:u                                             ( +-  0.11% )
+         1,484,544      LLC-store-misses:u                                            ( +-  0.41% )
+
+           0.39514 +- 0.00204 seconds time elapsed  ( +-  0.52% )
+
+Running false_sharing_2 on cores: 0,1,2,3,4,5
+Total sum: 600000000
+Time taken: 0.205701 seconds
+Total sum: 600000000
+Time taken: 0.205648 seconds
+Total sum: 600000000
+Time taken: 0.205825 seconds
+Total sum: 600000000
+Time taken: 0.205682 seconds
+Total sum: 600000000
+Time taken: 0.205341 seconds
+
+ Performance counter stats for './false_sharing_2 100000000' (5 runs):
+
+                41      LLC-load-misses:u                                             ( +-497.27% )
+                16      LLC-store-misses:u                                            ( +- 54.68% )
+
+          0.209379 +- 0.000177 seconds time elapsed  ( +-  0.08% )
+
+Running false_sharing_2 on cores: 0,2,4,6,8,10
+Total sum: 600000000
+Time taken: 0.207100 seconds
+Total sum: 600000000
+Time taken: 0.205815 seconds
+Total sum: 600000000
+Time taken: 0.206326 seconds
+Total sum: 600000000
+Time taken: 0.205713 seconds
+Total sum: 600000000
+Time taken: 0.205557 seconds
+
+ Performance counter stats for './false_sharing_2 100000000' (5 runs):
+
+             1,639      LLC-load-misses:u                                             ( +- 23.47% )
+                55      LLC-store-misses:u                                            ( +- 50.70% )
+
+          0.210026 +- 0.000375 seconds time elapsed  ( +-  0.18% )
+
+Performance tests completed.

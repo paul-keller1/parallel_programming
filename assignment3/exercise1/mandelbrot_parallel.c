@@ -1,0 +1,58 @@
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <omp.h>
+
+// Include that allows to print result as an image
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+
+// Default size of image
+#define X 1280
+#define Y 720
+#define MAX_ITER 10000
+
+void calc_mandelbrot(uint8_t image[Y][X]) {
+  double x, y;
+  double cx, cy;
+  double x_min = -2.5, x_max = 1.0;
+  double y_min = -1.0, y_max = 1.0;
+	#pragma omp parallel for schedule(dynamic)
+  for(int i = 0; i < X; i++) {
+    for(int j = 0; j < Y; j++) {
+      x = 0.0;
+      y = 0.0;
+      cx = x_min + (i / (double)(X - 1)) * (x_max - x_min);
+      cy = y_min + (j / (double)(Y - 1)) * (y_max - y_min);
+      int k;
+      for(k = 0; x*x + y*y <= 2*2 && k <= MAX_ITER; k++) {
+        double x_tmp = x*x - y*y + cx;
+        y = 2*x*y + cy;
+        x = x_tmp;
+      }
+
+      image[j][i] = (uint8_t) (k * 255 / MAX_ITER);
+    }
+  }
+}
+
+int main() {
+	uint8_t image[Y][X];
+  printf("max_threads = %i\n", omp_get_max_threads());
+	double startTime = omp_get_wtime();
+
+
+	calc_mandelbrot(image);
+	double endTime = omp_get_wtime();
+
+	printf("time: %2.4f seconds\n", endTime-startTime);
+
+
+
+	const int channel_nr = 1, stride_bytes = 0;
+	stbi_write_png("mandelbrot.png", X, Y, channel_nr, image, stride_bytes);
+	return EXIT_SUCCESS;
+}
+
+

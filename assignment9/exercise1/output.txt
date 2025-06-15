@@ -1,0 +1,61 @@
+
+
+1 Threads
+Trial: 1 
+res: 3370087297, time: 9.69 seconds
+Trial: 2 
+res: 3370087297, time: 9.82 seconds
+Trial: 3 
+res: 3370087297, time: 9.69 seconds
+Trial: 4 
+res: 3370087297, time: 9.79 seconds
+Trial: 5 
+res: 3370087297, time: 9.68 seconds
+
+2 Threads
+Trial: 1 
+res: 3370087297, time: 5.34 seconds
+Trial: 2 
+res: 3370087297, time: 5.36 seconds
+Trial: 3 
+res: 3370087297, time: 5.54 seconds
+Trial: 4 
+res: 3370087297, time: 5.40 seconds
+Trial: 5 
+res: 3370087297, time: 5.35 seconds
+
+4 Threads
+Trial: 1 
+res: 3370087297, time: 3.66 seconds
+Trial: 2 
+res: 3370087297, time: 3.75 seconds
+Trial: 3 
+res: 3370087297, time: 3.78 seconds
+Trial: 4 
+res: 3370087297, time: 3.83 seconds
+Trial: 5 
+res: 3370087297, time: 3.86 seconds
+
+6 Threads
+Trial: 1 
+res: 3370087297, time: 2.75 seconds
+Trial: 2 
+res: 3370087297, time: 2.78 seconds
+Trial: 3 
+res: 3370087297, time: 2.78 seconds
+Trial: 4 
+res: 3370087297, time: 2.74 seconds
+Trial: 5 
+res: 3370087297, time: 2.77 seconds
+
+12 Threads
+Trial: 1 
+res: 3370087297, time: 2.47 seconds
+Trial: 2 
+res: 3370087297, time: 2.46 seconds
+Trial: 3 
+res: 3370087297, time: 2.52 seconds
+Trial: 4 
+res: 3370087297, time: 2.46 seconds
+Trial: 5 
+res: 3370087297, time: 2.48 seconds

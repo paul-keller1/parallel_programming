@@ -1,0 +1,79 @@
+Usage of slurm:
+
+Study how to submit jobs in SLURM, how to check their state and how to cancel them.
+
+        -write a script (input via file or standard input)
+        -job submission: sbatch [options] [job_script.slurm [ job_script_arguments ...]]
+
+                #!/bin/bash ->must start with #!followed by available shell of your choosing
+
+                # Execute job in the partition "lva" unless you have special requirements.
+                #SBATCH --partition=lva
+                # Name your job to be able to identify it later
+                #SBATCH --job-name test
+                # Redirect output stream to this file
+                #SBATCH --output=output.log
+                # Maximum number of tasks (=processes) to start in total
+                #SBATCH --ntasks=1
+                # Maximum number of tasks (=processes) to start per node
+                #SBATCH --ntasks-per-node=1
+                # Enforce exclusive node allocation, do not share with other jobs
+                #SBATCH --exclusive
+
+                #SBATCH --cpus-per-task=number_of_cpus_per_task
+                #SBATCH --mem-per-cpu=memory_per_cpu
+
+                ./your_commands
+
+
+        -check for status: squ shows queued jobs of cluster
+
+        -cancel jobs:
+                -scancel job-id [...] // cancel jobs by id from job-name
+                -cancel all your pending jobs without being asked for confirmation:
+                squ -h -o %i | xargs scancel
+
+In your opionion, what are the 5 most important parameters available when submitting
+a job and why? What are possible settings of these parameters, and what effect do
+they have?
+
+        --job-name=name //necessary to cancel specific job
+        --output=filename_pattern //necessary to write output in a file
+        --mem=size[K|M|G|T] / --mem-per-cpu=size[K|M|G|T] //limit requirements of tasks
+        and make resource usage more clear; K M G T specify the unit
+        --ntasks=ntasks //request for resources for ntask tasks, else nodes are just filled up; ensures
+        that resources are actually available
+        --exclusive //prevents other jobs from running on nodes; important for reliable measurements and
+        efficient execution
+
+How do you run your program in parallel? What environment setup is required?
+
+        #!/bin/bash
+
+        # Name of your job.
+        #SBATCH --job-name=name
+
+        # Allocate one task on one node and six cpus for this task
+        #SBATCH --ntasks=1
+        #SBATCH --cpus-per-task=6 // cpus used for parallelisation
+
+        # Allocate 12 Gigabytes for the whole node/task
+        #SBATCH --mem=12G
+
+        # it is no longer necessary to tell OpenMP how many software threads to start
+        ####    export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
+        ./your_openmp_executable
+        linux kernel control groups are used to limit resource usage, so these specifications are
+        necessary
+
+        run manually
+
+        -srun --cpus-per-task=${SLURM_CPUS_PER_TASK:-1}
+        -srun --mpi=pmi2 [...]
+
+
+
+Sources:
+-https://www.uibk.ac.at/zid/systeme/hpc-systeme/common/tutorials/slurm-tutorial.html
+
+-https://github.com/uibk-dps-teaching/ps_parprog_2025/blob/main/job.sh

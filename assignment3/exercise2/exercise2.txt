@@ -1,0 +1,180 @@
+Open the two code versions in false_sharing/ and compare them. What are the differences in the source code and what are the implications?
+
+In the second version the factor 16 leads to 16 times the memory allocated. By that the information is spread out wider and collisions are rearer, because possibly information lies in different cache lines.
+
+What does the execution time show, and why?
+
+For false_sharing both tests are slower than for false_sharing_2. 
+For false_sharing the version on one processor is a lot faster. 
+For false_sharing_2 both versions are almost exactly the same time.
+
+For false_sharing there are way more collisions because of the denser layout and that costs time. The version with two processors is even slower, because the synchronisation takes time.
+
+Analyze the cache behavior of the two programs using perf. perf is a tool that can show so-called "performance counter" or "hardware counter" data. It enables you to get hardware count information from the CPU regarding certain events during the execution of your program (clock cycles, cache misses, branch mispredictions, etc.). perf list shows a non-exhaustive, short list of events that can be counted on the respective hardware. Compare a general run of perf stat to get a high-level overview (i.e. perf stat <path/to/your/program>). Can you spot any significant differences in the measurements?
+
+-the cpu usage is a bit lower for both cases of false_sharing
+-no context-switches and cpu-migrations: ensured by exclusive
+-more page_faults for false_sharing_2 (just 70/sec)
+-idle frontend and backend cycles, insn per cycle, stalled cycles per insn(how many cycles are missed for each instruction): false_sharing 2CPU > false_sharing 1CPU > false_sharing_2 2CPU == false_sharing_2 1CPU
+-branches/sec seem to correlate with execution time
+-branches and branch misses are pretty consistent
+
+Get more detailed information by specifically looking at cache events, e.g. perf stat -e LLC-load-misses -e LLC-store-misses <path/to/your/program> or perf stat -e L1-dcache-load-misses -e L1-dcache-store-misses <path/to/your/program>. Can you spot any significant differences? Explain the results.
+For L1 the cache load and store misses are about 1000 times more often for false_sharing(2 processors make it about 1.5 more likely) than for false_sharing_2 (about same result for 1 and 2 processors).
+For LLC the cache load and store misses are very low except for false_sharing and 2 processors (about 1.2-1.5 million)
+
+
+Feel free to also check for this effect on your local machines and report the data (including the CPU type!).
+i have an M3 with 8 cores:
+
+┌──────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Machine (3314MB total)                                                                       │
+│                                                                                              │
+│ ┌────────────────────────────────────────────────────────────────────┐  ┌──────────────────┐ │
+│ │ Package L#0                                                        │  │ CoProc opencl0d1 │ │
+│ │                                                                    │  │                  │ │
+│ │ ┌────────────────────────────────────────────────────────────────┐ │  │ 10 compute units │ │
+│ │ │ NUMANode L#0 P#0 (3314MB)                                      │ │  │                  │ │
+│ │ └────────────────────────────────────────────────────────────────┘ │  │ 16 GB            │ │
+│ │                                                                    │  └──────────────────┘ │
+│ │ ┌────────────────────────────────────────────────────────────────┐ │                       │
+│ │ │ L2 (4096KB)                                                    │ │                       │
+│ │ └────────────────────────────────────────────────────────────────┘ │                       │
+│ │                                                                    │                       │
+│ │ ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐ │                       │
+│ │ │ L1d (64KB)  │  │ L1d (64KB)  │  │ L1d (64KB)  │  │ L1d (64KB)  │ │                       │
+│ │ └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘ │                       │
+│ │                                                                    │                       │
+│ │ ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐ │                       │
+│ │ │ L1i (128KB) │  │ L1i (128KB) │  │ L1i (128KB) │  │ L1i (128KB) │ │                       │
+│ │ └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘ │                       │
+│ │                                                                    │                       │
+│ │ ┌────────────┐   ┌────────────┐   ┌────────────┐   ┌────────────┐  │                       │
+│ │ │ Core L#0   │   │ Core L#1   │   │ Core L#2   │   │ Core L#3   │  │                       │
+│ │ │            │   │            │   │            │   │            │  │                       │
+│ │ │ ┌────────┐ │   │ ┌────────┐ │   │ ┌────────┐ │   │ ┌────────┐ │  │                       │
+│ │ │ │ PU L#0 │ │   │ │ PU L#1 │ │   │ │ PU L#2 │ │   │ │ PU L#3 │ │  │                       │
+│ │ │ │        │ │   │ │        │ │   │ │        │ │   │ │        │ │  │                       │
+│ │ │ │  P#0   │ │   │ │  P#1   │ │   │ │  P#2   │ │   │ │  P#3   │ │  │                       │
+│ │ │ └────────┘ │   │ └────────┘ │   │ └────────┘ │   │ └────────┘ │  │                       │
+│ │ └────────────┘   └────────────┘   └────────────┘   └────────────┘  │                       │
+│ │                                                                    │                       │
+│ │ ┌────────────────────────────────────────────────────────────────┐ │                       │
+│ │ │ L2 (16MB)                                                      │ │                       │
+│ │ └────────────────────────────────────────────────────────────────┘ │                       │
+│ │                                                                    │                       │
+│ │ ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐ │                       │
+│ │ │ L1d (128KB) │  │ L1d (128KB) │  │ L1d (128KB) │  │ L1d (128KB) │ │                       │
+│ │ └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘ │                       │
+│ │                                                                    │                       │
+│ │ ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐ │                       │
+│ │ │ L1i (192KB) │  │ L1i (192KB) │  │ L1i (192KB) │  │ L1i (192KB) │ │                       │
+│ │ └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘ │                       │
+│ │                                                                    │                       │
+│ │ ┌────────────┐   ┌────────────┐   ┌────────────┐   ┌────────────┐  │                       │
+│ │ │ Core L#4   │   │ Core L#5   │   │ Core L#6   │   │ Core L#7   │  │                       │
+│ │ │            │   │            │   │            │   │            │  │                       │
+│ │ │ ┌────────┐ │   │ ┌────────┐ │   │ ┌────────┐ │   │ ┌────────┐ │  │                       │
+│ │ │ │ PU L#4 │ │   │ │ PU L#5 │ │   │ │ PU L#6 │ │   │ │ PU L#7 │ │  │                       │
+│ │ │ │        │ │   │ │        │ │   │ │        │ │   │ │        │ │  │                       │
+│ │ │ │  P#4   │ │   │ │  P#5   │ │   │ │  P#6   │ │   │ │  P#7   │ │  │                       │
+│ │ │ └────────┘ │   │ └────────┘ │   │ └────────┘ │   │ └────────┘ │  │                       │
+│ │ └────────────┘   └────────────┘   └────────────┘   └────────────┘  │                       │
+│ └────────────────────────────────────────────────────────────────────┘                       │
+└──────────────────────────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Host: zid-vpns-15-20.uibk.ac.at                                                              │
+│                                                                                              │
+│ Date: Mon Mar 24 14:19:15 2025                                                               │
+└──────────────────────────────────────────────────────────────────────────────────────────────┘
+
+-this just works to a certain degree, bc i just have one processor
+-times for false sharing 1 and 2 for all my 8 cores (4 performance, 4 efficiency)
+  FIRST 2 CORES
+  paulkeller@Mac exercise2 % ./timetracking_job_local.sh
+  false_sharing running on same processor cores: 0,1
+  Total sum: 200000000
+  Time taken: 0.156057 seconds
+
+  real    0m0.177s
+  user    0m0.321s
+  sys     0m0.008s
+  false_sharing_2 running on same processor cores: 0,1
+  Total sum: 200000000
+  Time taken: 0.144180 seconds
+
+  real    0m0.155s
+  user    0m0.293s
+  sys     0m0.004s
+  paulkeller@Mac exercise2 % 
+  LAST 2 CORES
+  paulkeller@Mac exercise2 % ./timetracking_job_local.sh
+  false_sharing running on same processor cores: 6,7
+  Total sum: 200000000
+  Time taken: 0.157499 seconds
+
+  real    0m0.182s
+  user    0m0.324s
+  sys     0m0.007s
+  false_sharing_2 running on same processor cores: 6,7
+  Total sum: 200000000
+  Time taken: 0.143994 seconds
+
+  real    0m0.154s
+  user    0m0.293s
+  sys     0m0.004s
+  paulkeller@Mac exercise2 % 
+  4 CORES
+  paulkeller@Mac exercise2 % ./timetracking_job_local.sh
+  false_sharing running on same processor cores: 0,1,2,3
+  Total sum: 400000000
+  Time taken: 0.165002 seconds
+
+  real    0m0.191s
+  user    0m0.665s
+  sys     0m0.009s
+  false_sharing_2 running on same processor cores: 0,1,2,3
+  Total sum: 400000000
+  Time taken: 0.156950 seconds
+
+  real    0m0.168s
+  user    0m0.629s
+  sys     0m0.005s
+  paulkeller@Mac exercise2 % 
+  6 CORES
+  paulkeller@Mac exercise2 % ./timetracking_job_local.sh
+  false_sharing running on same processor cores: 0,1,2,3,4,5
+  Total sum: 600000000
+  Time taken: 0.234795 seconds
+
+  real    0m0.260s
+  user    0m1.354s
+  sys     0m0.012s
+  false_sharing_2 running on same processor cores: 0,1,2,3,4,5
+  Total sum: 600000000
+  Time taken: 0.225680 seconds
+
+  real    0m0.238s
+  user    0m1.290s
+  sys     0m0.006s
+
+
+
+
+  8 CORES
+  paulkeller@Mac exercise2 % ./timetracking_job_local.sh
+  false_sharing running on same processor cores: 0,1,2,3
+  Total sum: 800000000
+  Time taken: 0.246129 seconds
+
+  real    0m0.270s
+  user    0m1.768s
+  sys     0m0.014s
+  false_sharing_2 running on same processor cores: 0,1,2,3
+  Total sum: 800000000
+  Time taken: 0.252402 seconds
+
+  real    0m0.264s
+  user    0m1.781s
+  sys     0m0.008s
+  paulkeller@Mac exercise2 % 

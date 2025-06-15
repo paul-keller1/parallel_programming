@@ -1,0 +1,18 @@
+{
+  "files.associations": {
+    "*.sqlbook": "sql",
+    "*.ndjson": "jsonl",
+    "*.dbclient-js": "javascript",
+    "stb_image_write.h": "c",
+    "__locale": "c",
+    "bitset": "c",
+    "locale": "c",
+    "unordered_map": "c",
+    "algorithm": "c",
+    "format": "c",
+    "atomic": "c",
+    "random": "c",
+    "errno.h": "c"
+  },
+  "C_Cpp.default.compilerPath": "/usr/local/bin/gcc-14"
+}

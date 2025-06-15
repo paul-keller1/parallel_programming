@@ -1,0 +1,14 @@
+CFLAGS = -std=gnu11 -Wall -Wextra -lm
+
+.PHONY: all
+all: column_major_hadamard row_major_hadamard
+
+.PHONY: clean
+clean:
+	$(RM) column_major_hadamard row_major_hadamard
+
+column_major_hadamard: column_major_hadamard.c
+	gcc $(CFLAGS) -o column_major_hadamard column_major_hadamard.c
+
+row_major_hadamard: row_major_hadamard.c
+	gcc $(CFLAGS) -o row_major_hadamard row_major_hadamard.c

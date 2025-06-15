@@ -1,0 +1,73 @@
+//this is for N=40000
+========== Serial Initialization (no first-touch) ==========
+Trial: 1
+Memory allocation time: 0.001596 seconds
+Using serial (no first-touch) initialization
+Serial initialization time: 2.600668 seconds
+Matrix computation time: 2.175135 seconds
+Sum of matrix elements: 63998400000000
+Memory deallocation time: 0.387270 seconds
+Trial: 2
+Memory allocation time: 0.001687 seconds
+Using serial (no first-touch) initialization
+Serial initialization time: 2.436750 seconds
+Matrix computation time: 1.641015 seconds
+Sum of matrix elements: 63998400000000
+Memory deallocation time: 0.354945 seconds
+Trial: 3
+Memory allocation time: 0.001504 seconds
+Using serial (no first-touch) initialization
+Serial initialization time: 2.479223 seconds
+Matrix computation time: 1.620441 seconds
+Sum of matrix elements: 63998400000000
+Memory deallocation time: 0.345205 seconds
+Trial: 4
+Memory allocation time: 0.001595 seconds
+Using serial (no first-touch) initialization
+Serial initialization time: 2.624505 seconds
+Matrix computation time: 1.668177 seconds
+Sum of matrix elements: 63998400000000
+Memory deallocation time: 0.353297 seconds
+Trial: 5
+Memory allocation time: 0.001567 seconds
+Using serial (no first-touch) initialization
+Serial initialization time: 2.498846 seconds
+Matrix computation time: 1.608058 seconds
+Sum of matrix elements: 63998400000000
+Memory deallocation time: 0.341760 seconds
+========== Parallel Initialization (first-touch) ==========
+Trial: 1
+Memory allocation time: 0.001530 seconds
+Using parallel (first-touch) initialization
+Parallel initialization time: 1.611472 seconds
+Matrix computation time: 1.832364 seconds
+Sum of matrix elements: 63998400000000
+Memory deallocation time: 0.425257 seconds
+Trial: 2
+Memory allocation time: 0.001622 seconds
+Using parallel (first-touch) initialization
+Parallel initialization time: 1.728560 seconds
+Matrix computation time: 1.809108 seconds
+Sum of matrix elements: 63998400000000
+Memory deallocation time: 0.405689 seconds
+Trial: 3
+Memory allocation time: 0.001574 seconds
+Using parallel (first-touch) initialization
+Parallel initialization time: 1.556366 seconds
+Matrix computation time: 1.643726 seconds
+Sum of matrix elements: 63998400000000
+Memory deallocation time: 0.378173 seconds
+Trial: 4
+Memory allocation time: 0.001609 seconds
+Using parallel (first-touch) initialization
+Parallel initialization time: 1.575227 seconds
+Matrix computation time: 1.740044 seconds
+Sum of matrix elements: 63998400000000
+Memory deallocation time: 0.399284 seconds
+Trial: 5
+Memory allocation time: 0.001608 seconds
+Using parallel (first-touch) initialization
+Parallel initialization time: 1.533048 seconds
+Matrix computation time: 1.731584 seconds
+Sum of matrix elements: 63998400000000
+Memory deallocation time: 0.399710 seconds

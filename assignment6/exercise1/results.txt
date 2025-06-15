@@ -1,0 +1,56 @@
+
+serial
+Approximate value of pi: 3.141937
+time: 0.0782 seconds
+
+critical:
+1 thread
+Approximate value of pi: 3.141937
+time: 0.1079 seconds
+2 threads
+Approximate value of pi: 3.141937
+time: 0.2266 seconds
+4 threads
+Approximate value of pi: 3.141094
+time: 0.2103 seconds
+8 threads
+Approximate value of pi: 3.141094
+time: 0.3886 seconds
+12 threads
+Approximate value of pi: 3.141094
+time: 0.4015 seconds
+
+atomic:
+1 thread
+Approximate value of pi: 3.141744
+time: 0.0871 seconds
+2 threads
+Approximate value of pi: 3.135585
+time: 0.1788 seconds
+4 threads
+Approximate value of pi: 3.118395
+time: 0.1779 seconds
+8 threads
+Approximate value of pi: 3.147777
+time: 0.3213 seconds
+12 threads
+Approximate value of pi: 3.146813
+time: 0.3198 seconds
+
+reduction:
+1 thread
+Approximate value of pi: 3.141751
+time: 0.0674 seconds
+2 threads
+Approximate value of pi: 3.141828
+time: 0.0397 seconds
+4 threads
+Approximate value of pi: 3.141660
+time: 0.0237 seconds
+8 threads
+Approximate value of pi: 3.141307
+time: 0.0523 seconds
+12 threads
+Approximate value of pi: 3.141271
+time: 0.0527 seconds
+

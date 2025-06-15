@@ -1,0 +1,19 @@
+2) in one cache line fit 64*8bits/32bits = 16 entries
+
+load-misses:
+row-major-layout:
+
+every 16 entries a new row is entered, the cache is set-associative, so in just 7/8 cases
+we miss, bc 1/8 of the storage is lying in the cache all of the time. so 3*n^2*1/16=0.1875*n^2
+
+
+column-major-layout:
+every entry we change cacheline.
+3*n^2 =
+
+N*N*3*4 = 12000000+256000+32000+32000 ->N = 1000
+
+
+
+store-misses are not predictable
+

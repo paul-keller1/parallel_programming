@@ -1,0 +1,78 @@
+Starting performance measurements...
+Running false_sharing on cores: 0,1,2,3,4,5
+Total sum: 600000000
+Time taken: 0.310623 seconds
+Total sum: 600000000
+Time taken: 0.310521 seconds
+Total sum: 600000000
+Time taken: 0.310483 seconds
+Total sum: 600000000
+Time taken: 0.310606 seconds
+Total sum: 600000000
+Time taken: 0.310401 seconds
+
+ Performance counter stats for './false_sharing 100000000' (5 runs):
+
+        16,764,463      L1-dcache-load-misses:u                                       ( +-  0.01% )
+         7,185,381      L1-dcache-store-misses:u                                      ( +-  0.01% )
+
+           0.31630 +- 0.00219 seconds time elapsed  ( +-  0.69% )
+
+Running false_sharing on cores: 0,2,4,6,8,10
+Total sum: 600000000
+Time taken: 0.388017 seconds
+Total sum: 600000000
+Time taken: 0.396533 seconds
+Total sum: 600000000
+Time taken: 0.397066 seconds
+Total sum: 600000000
+Time taken: 0.408794 seconds
+Total sum: 600000000
+Time taken: 0.395326 seconds
+
+ Performance counter stats for './false_sharing 100000000' (5 runs):
+
+        12,118,064      L1-dcache-load-misses:u                                       ( +-  2.12% )
+         4,671,164      L1-dcache-store-misses:u                                      ( +-  1.97% )
+
+           0.40081 +- 0.00330 seconds time elapsed  ( +-  0.82% )
+
+Running false_sharing_2 on cores: 0,1,2,3,4,5
+Total sum: 600000000
+Time taken: 0.218913 seconds
+Total sum: 600000000
+Time taken: 0.205825 seconds
+Total sum: 600000000
+Time taken: 0.207063 seconds
+Total sum: 600000000
+Time taken: 0.206891 seconds
+Total sum: 600000000
+Time taken: 0.209917 seconds
+
+ Performance counter stats for './false_sharing_2 100000000' (5 runs):
+
+            12,225      L1-dcache-load-misses:u                                       ( +-  1.48% )
+             1,120      L1-dcache-store-misses:u                                      ( +-  2.11% )
+
+           0.21436 +- 0.00351 seconds time elapsed  ( +-  1.64% )
+
+Running false_sharing_2 on cores: 0,2,4,6,8,10
+Total sum: 600000000
+Time taken: 0.220287 seconds
+Total sum: 600000000
+Time taken: 0.206137 seconds
+Total sum: 600000000
+Time taken: 0.208200 seconds
+Total sum: 600000000
+Time taken: 0.206976 seconds
+Total sum: 600000000
+Time taken: 0.206902 seconds
+
+ Performance counter stats for './false_sharing_2 100000000' (5 runs):
+
+            12,041      L1-dcache-load-misses:u                                       ( +-  3.97% )
+             1,097      L1-dcache-store-misses:u                                      ( +- 20.35% )
+
+           0.21340 +- 0.00286 seconds time elapsed  ( +-  1.34% )
+
+Performance tests completed.

@@ -1,0 +1,7 @@
+How would you improve program performance?
+-parallelize loops with omp
+-try different compiler flags
+
+Can you think of a way to parallelize this algorithm?
+->see mandelbrot_parallel.c
+

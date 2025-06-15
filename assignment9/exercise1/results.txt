@@ -1,0 +1,48 @@
+
+
+Are there any functional or issues in the given code? Document your findings.
+
+
+
+	if (!(arr)[i]) PERROR_GOTO(label); \
+
+
+  the paranthesis dont really make are necessary here, it should be arr[i] instead of (arr)[i]
+
+			(arr)[i] = malloc(sizeof(**(arr)) * n); \
+
+
+
+
+  
+
+use calloc:
+-the cleanup logic doesnt work with malloc
+should use calloc to check for null later, if 1d pointers have not been malloced
+-c and local_res are not initialized to 0s
+
+
+
+if (!local_res) PERROR_GOTO(error_c); -> wrong error message and wrong cleanup
+-> if (!local_res) PERROR_GOTO(error_local_res); 
+
+
+too much #pragma omp parallel, only once for each loop structure
+
+collapse should be tried used to really use parallelism for the nested loops
+also maybe reduction is more efficient
+
+
+
+
+Improve the performance of the given source code, fix any functional bugs you find.
+
+
+
+Benchmark your modification of the code and the original implementation with 1, 2, 4, 6, and 12 threads on LCC3 using n=1,500. Has your effort paid off?
+
+
+
+Enter your shortest wall clock time for 12 threads and n=1,500 on LCC3 to the comparison spreadsheet linked on Discord.
+
+-collapse didnt help

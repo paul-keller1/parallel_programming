@@ -1,0 +1,14 @@
+all of the variables flag, data and flag_val are private
+so the value of flag is undefined within the parallel region. still the given compiler seems to assign 0 in this case and that should not be the reason for 
+the unintended behavior
+the printf prints out 1 for the flag and 42 for the data at least most of the time. 
+the problem here is that in principle the flag can anything when entering the else if, 
+because it is not being initialized bc of being private and so sometimes the code should 
+result in erroneous prints for the flag and data, the data also in any case can result in
+any value even if the flag is one, bc the behavior is undefined when entering the threads, 
+but often the program seems to just take the same address as outside the region
+
+still no wrong unintended result on lcc3 with 1000 ex1_trials and same locally
+
+
+

@@ -1,0 +1,94 @@
+SNIPPET1
+
+a[0] = 0;
+#pragma omp parallel for
+for (i=1; i<N; i++) {
+    a[i] = 2.0*i*(i-1);
+    b[i] = a[i] - a[i-1];
+}
+
+  -synchronisation is not guaranteed, b[i] depends on a[i-1] which may or may not be written if its in another chunk, so potentially false results
+
+SNIPPET1, N = 100
+time parallel: 0.0004 seconds
+time serial: 0.0000 seconds
+All values of b: 2, 0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 64, 68, -140731013783636, 76, 80, 84, 88, 92, 96, 100, 104, -23184584463207, 112, 116, 120, 124, 128, 132, 136, 140, 144, 148, 152, 156, 160, 164, 168, 3784, 176, 180, 184, 188, 192, 196, 200, -140731013777928, 208, 212, 216, 220, 224, 228, 232, 236, 240, 244, 248, 252, 256, 260, 264, 9112, 272, 276, 280, 284, 288, 292, 296, 10376, 304, 308, 312, 316, 320, 324, 328, 13944, 336, 340, 344, 348, 352, 356, 360, 16744, 368, 372, 376, 380, 384, 388, 392
+
+All values of b_serial: 140731013782640, 0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 64, 68, 72, 76, 80, 84, 88, 92, 96, 100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140, 144, 148, 152, 156, 160, 164, 168, 172, 176, 180, 184, 188, 192, 196, 200, 204, 208, 212, 216, 220, 224, 228, 232, 236, 240, 244, 248, 252, 256, 260, 264, 268, 272, 276, 280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320, 324, 328, 332, 336, 340, 344, 348, 352, 356, 360, 364, 368, 372, 376, 380, 384, 388, 392
+
+
+
+SNIPPET2
+
+
+a[0] = 0;
+#pragma omp parallel
+{
+    #pragma omp for nowait
+    for (i=1; i<N; i++) {
+        a[i] = 3.0*i*(i+1);
+    }
+    #pragma omp for
+    for (i=1; i<N; i++) {
+        b[i] = a[i] - a[i-1];
+    }
+}
+
+  -bc of nowait, the first loops execution is not synchronised and we again have some wrong values at the chunks transisions
+
+  SNIPPET2
+  time parallel: 0.0003 seconds
+  time serial  : 0.0000 seconds
+  All values of b (parallel): 39, 6, 12, 18, 24, 30, 36, 42, 48, 54, 60, 66, 72, 78, 84, 90, 96, 102, 108, 114, 120, 126, 132, 138, 144, 150, 156, 162, 168, 174, 180, 186, 192, 198, 204, 210, 216, 222, 228, 234, 240, 246, 252, 258, 264, 270, 276, 282, 288, 294, 300, 306, 2958, 318, 324, 330, 336, 342, 348, 354, 360, 366, 372, 378, 384, 390, 396, 402, 408, 414, 420, 426, 432, 438, 444, 450, 456, 462, 468, 474, 480, 486, 492, 498, 504, 510, 516, 522, 528, 534, 540, 546, 552, 558, 564, 570, 576, 582, 588, 594
+  All values of b_serial (serial): -1999497536, 6, 12, 18, 24, 30, 36, 42, 48, 54, 60, 66, 72, 78, 84, 90, 96, 102, 108, 114, 120, 126, 132, 138, 144, 150, 156, 162, 168, 174, 180, 186, 192, 198, 204, 210, 216, 222, 228, 234, 240, 246, 252, 258, 264, 270, 276, 282, 288, 294, 300, 306, 312, 318, 324, 330, 336, 342, 348, 354, 360, 366, 372, 378, 384, 390, 396, 402, 408, 414, 420, 426, 432, 438, 444, 450, 456, 462, 468, 474, 480, 486, 492, 498, 504, 510, 516, 522, 528, 534, 540, 546, 552, 558, 564, 570, 576, 582, 588, 594
+
+
+SNIPPET3
+
+
+#pragma omp parallel for default(none)
+for (i=0; i<N; i++) {
+    x = sqrt(b[i]) - 1;
+    a[i] = x*x + 2*x + 1;
+}
+-default(none) asks for explicit declaration of the scope, else the compiler will complain as in this case here (for b[i], a[i] and i)
+-avoids errors potentially
+
+SNIPPET4
+
+f = 2;
+#pragma omp parallel for private(f,x)
+for (i=0; i<N; i++) {
+    x = f * b[i];
+    a[i] = x - 7;
+}
+a[0] = x; 
+
+-x and f are private and their values on the outside are undefined
+-x defaults to 0 on the outside maybe bc f defaults to zero inside and we get this on the outside or bc its default initialized (not guaranteed for non-global variables) on the outside
+
+SNIPPET5
+
+sum = 0; 
+#pragma omp parallel for
+for (i=0; i<N; i++) {
+    sum = sum + b[i];
+}
+-sum is not locked before usage. to threads can read the same value of the sum, the other b[i]s arent taken into account then
+
+time: 0.0003 seconds
+sum: 251168, sum_serial: 2001000 //i just add positive integers here, as espected, the serial sum is bigger
+
+SNIPPET6
+
+#pragma omp parallel
+#pragma omp for
+for (i=0; i<N; i++) {
+    #pragma omp for
+    for (j=0; j<N; j++) {
+        a[i][j] = b[i][j];
+    }
+}
+
+-nesting not allowed (compilererror), better use #pragma omp parallel for collapse(2) to parallelize both loops
+
