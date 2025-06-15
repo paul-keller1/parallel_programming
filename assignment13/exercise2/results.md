@@ -200,4 +200,6 @@ void matrix_multiply_optimized(double **c, double **a, double **b) {
 
 ![Snippet 7 Timing](plots/snippet7_timing_compare.png)
 
+- According too asm compiler doesnt tile.
+
 These plots visualize the performance of different code optimizations.
