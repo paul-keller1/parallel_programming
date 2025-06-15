@@ -18,7 +18,7 @@ void optimized(int *a, const int *b) {
     }
 }
 ```
-![Snippet 1 Timing](plots/snippet1_timing.png)
+![Snippet 1 Timing](plots/snippet1_timing_compare.png)
 
 ## Snippet 2
 ```c
@@ -35,7 +35,7 @@ void process_array_hypot_optimized(double *a) {
     }
 }
 ```
-![Snippet 2 Timing](plots/snippet2_timing.png)
+![Snippet 2 Timing](plots/snippet2_timing_compare.png)
 
 ## Snippet 3
 ```c
@@ -64,7 +64,7 @@ void process_array_conditional_optimized(int *a, const int *b, const int *c, int
 }
 ```
 
-![Snippet 3 Timing](plots/snippet3_timing.png)
+![Snippet 3 Timing](plots/snippet3_timing_compare.png)
 
 ## Snippet 4
 ```c
@@ -89,7 +89,7 @@ void sum_arrays_optimized(const int *a, const int *b, const int *c, long long *s
 }
 ```
 
-![Snippet 4 Timing](plots/snippet4_timing.png)
+![Snippet 4 Timing](plots/snippet4_timing_compare.png)
 
 ## Snippet 5
 ```c
@@ -115,7 +115,7 @@ void min_and_sum_optimized(const int *a, int *min_val, long long *sum_val) {
     }
 }
 ```
-![Snippet 5 Timing](plots/snippet5_timing.png)
+![Snippet 5 Timing](plots/snippet5_timing_compare.png)
 
 ## Snippet 6
 ```c
@@ -141,7 +141,7 @@ void process_array_splitted(int *a, const int *b, const int *c) {
 
 ```
 
-![Snippet 6 Timing](plots/snippet6_timing.png)
+![Snippet 6 Timing](plots/snippet6_timing_compare.png)
 
 ## Snippet 7
 ```c
@@ -176,6 +176,6 @@ void matrix_multiply_optimized(double **c, double **a, double **b) {
 }
 ```
 
-![Snippet 7 Timing](plots/snippet7_timing.png)
+![Snippet 7 Timing](plots/snippet7_timing_compare.png)
 
 These plots visualize the performance of different code optimizations.
